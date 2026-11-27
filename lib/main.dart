@@ -1,6 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'firebase_options.dart';
+import 'notification_service.dart'; // <-- TAMBAHKAN INI (penyebab merah sebelumnya)
 import 'screens/auth_wrapper.dart';
 import 'screens/login_screen.dart';
 
@@ -10,7 +12,13 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  // Daftarkan handler untuk pesan saat aplikasi background / mati
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+
   runApp(const MyApp());
+
+  // Inisialisasi notifikasi (izin, token, listener)
+  await NotificationService.init();
 }
 
 class MyApp extends StatelessWidget {
@@ -22,6 +30,7 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      navigatorKey: navigatorKey, // Agar bisa navigasi dari klik notifikasi
       title: 'Auth Portal',
       theme: ThemeData(
         useMaterial3: true,
